@@ -1,0 +1,60 @@
+package com.test;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
+public class Test3 {
+	static List<String> list = new ArrayList<>();
+	//按行读取文件
+	public static void readFileByLines(String filename) throws IOException {
+	File file = new File(filename);
+	BufferedReader reader = null;
+	InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), "GBK");
+		reader = new BufferedReader(inputStreamReader);
+		String tempString = reader.readLine();
+		while((tempString = reader.readLine()) != null) 
+		    list.add(tempString);   //将tempString里的内容放到list中
+		inputStreamReader.close();
+		reader.close();
+	}
+	//按行读取文档到list
+	public static void main(String[] args) throws IOException {
+		//输入文件名为参数args[0]
+		readFileByLines(args[0]);
+		String[][] string = new String[list.size()][];
+		for(int i=0 ; i<list.size() ; i++)          
+			string[i] = list.get(i).split("\\s+");
+		//将输出文件名修改为参数args[1]
+		File file = new File(args[1]);
+		FileOutputStream out = new FileOutputStream(file);
+		OutputStreamWriter writer = new OutputStreamWriter(out);
+		String loc = string[0][0];
+		//输出全部省份信息
+		if(args.length == 2) {
+		    writer.write(loc + "\r\n");
+			for(int j=0 ; j<string.length ; j++) {
+	            if(string[j][0].equals(loc))
+	            	writer.write(string[j][1] + "       " + string[j][2] + "\r\n");
+			    else{
+			    	writer.write("\r\n" + string[j][0] + "\r\n");  
+			    	loc = string[j][0];          
+		        }
+		    }
+		}
+		//输出对应省份的信息
+		else if(args.length == 3) {
+			for(int j=0 ; j<string.length ; j++) {
+				if(string[j][0].equals(args[2]))
+					writer.write(string[j][1] + "       " + string[j][2] + "\r\n");
+				else
+					continue;
+			}
+		}
+	    writer.close();
+	}
+}
