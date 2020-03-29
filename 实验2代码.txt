@@ -1,0 +1,55 @@
+package com.test;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Test2 {
+	static List<String> list=new ArrayList<>();    //创建一个列表对象list
+	//按行读取文件
+	public static void readFileByLines(String filename) throws IOException {
+		File file = new File(filename);
+		BufferedReader reader=null;
+		InputStreamReader input= new InputStreamReader(new FileInputStream(file), "GBK");    //避免乱码
+		reader = new BufferedReader(input);
+		String tempString = reader.readLine();    //将读出的内容传给tempString
+		while((tempString = reader.readLine())!= null) {
+			list.add(tempString);    //将tempString里的内容放到list中
+		}
+		input.close();
+		reader.close();
+	}
+	//按行读取文档到list
+	public static void main(String[] args) throws IOException {
+		readFileByLines("D:/test2/yq_in.txt");
+		//初始化一个二维数组
+		String[][] string = new String[list.size()][];
+		//遍历这个二维数组
+		for(int i=0 ; i<list.size() ; i++) {          
+			string[i] = list.get(i).split("\\s+");    //正则表达式去空字符，\\s+表示多次匹配使用
+		}
+		File file = new File("D:/test2/yq_out.txt");
+		FileOutputStream out = new FileOutputStream(file);
+		OutputStreamWriter writer = new OutputStreamWriter(out);
+		String province = string[0][0];
+		writer.write(province+"\r\n");    //先写入省份，然后换行
+		for(int j=0 ; j<string.length ; j++) {
+		    if(string[j][0].equals(province))
+	            //用equals来判断第一列的省份是否与province初始值“浙江省”匹配
+			    //匹配的话就输出第二列和第三列
+	            writer.write(string[j][1]+"            "+string[j][2]+"\r\n");
+		    else{
+		        //不匹配的话就换行，输出新的省份
+		        writer.write("\r\n"+string[j][0]+"\r\n");  
+			    writer.write(string[j][1]+"            "+string[j][2]+"\r\n");
+			    province = string[j][0];          
+		    }
+	    }
+		writer.close();
+	}
+}
